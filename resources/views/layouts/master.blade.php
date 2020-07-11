@@ -22,6 +22,7 @@
 
 </head>
 <body >
+	@include('sweetalert::alert')
     @include('layouts.parts.header')
 
 	{{-- <div class="slider"></div><!-- slider --> --}} {{--Abaikan saja--}}
