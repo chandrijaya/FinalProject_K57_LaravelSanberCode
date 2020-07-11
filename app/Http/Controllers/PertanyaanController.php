@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\User;
+use gApp\User;
 use App\Pertanyaan;
 use App\Jawaban;
 use App\VoteJawaban;
 use App\VotePertanyaan;
+
 
 class PertanyaanController extends Controller {
     public function __construct() {
@@ -71,6 +73,7 @@ class PertanyaanController extends Controller {
             'isi' => $data['isi'],
             'user_id' => Auth::id()
         ]);
+        Alert::success('Menambah Pertanyaan', 'Anda berhasil menambah sebuah pertanyaan');
         return redirect('/pertanyaan'); 
     }
 
@@ -87,11 +90,13 @@ class PertanyaanController extends Controller {
             'judul' => $data['judul'],
             'isi' => $data['isi']
         ]);
+        Alert::success('ubah Pertanyaan', 'Anda berhasil merubah sebuah pertanyaan');
         return redirect('/pertanyaan'); 
     }
 
     // Hapus pertanyaan
     public function delete($id) {
+        Alert::warning('Hapus Pertanyaan', 'Apakah anda yakin ingin menghapus pertanyaan?');
         $vote_pertanyaan_removed = VotePertanyaan::where('pertanyaan_id', $id)->forceDelete();
         $jawaban_removed = Jawaban::where('pertanyaan_id', $id)->forceDelete();
         $pertanyaan_removed = Pertanyaan::where('id', $id)->forceDelete();
