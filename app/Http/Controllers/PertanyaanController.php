@@ -6,7 +6,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use gApp\User;
+use App\User;
 use App\Pertanyaan;
 use App\Jawaban;
 use App\VoteJawaban;
