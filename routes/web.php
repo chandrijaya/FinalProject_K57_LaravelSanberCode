@@ -21,14 +21,16 @@ Route::get('/', function () {
 
 
 Auth::routes();
-Route::get('/', 'HomeController@index')->name('home');
-Route::get('/pertanyaan', 'PertanyaanController@index');
-Route::get('/pertanyaan/{id}', 'PertanyaanController@show');
+Route::get('/home', 'HomeController@index')->name('home');
+// Route::get('/pertanyaan', 'PertanyaanController@index');
+// Route::get('/pertanyaan/{id}', 'PertanyaanController@show');
 
-Route::get('/pertanyaan', 'PertanyaanController@index');
+
 Route::group(['middleware' => 'auth'], function() {
+    Route::get('/pertanyaan', 'PertanyaanController@index');
     
     Route::get('/pertanyaan/create', 'PertanyaanController@create');
+    Route::get('/pertanyaan/{id}', 'PertanyaanController@show');
     Route::get('/pertanyaan/{id}/edit', 'PertanyaanController@edit');
     Route::post('/pertanyaan', 'PertanyaanController@store');
     Route::put('/pertanyaan/{id}', 'PertanyaanController@update');

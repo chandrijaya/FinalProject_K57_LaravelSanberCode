@@ -180,15 +180,14 @@ var modal = $(this)
 
 modal.find('.modal-body form').attr("action", path)
 modal.find('.modal-body h3').html(pertanyaan)
-})
+});
 
-// {{-- script khusus summernote --}}
-<script>
-    $(document).ready(function() {
-        $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
-    });
-</script>
-// {{-- /script khusus summernote --}}
 
+// script khusus summernote
+$(document).ready(function() {
+    $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
+});
+// script khusus summernote
 </script>
+
 @endpush

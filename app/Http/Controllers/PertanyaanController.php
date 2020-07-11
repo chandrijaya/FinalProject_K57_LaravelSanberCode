@@ -38,7 +38,8 @@ class PertanyaanController extends Controller {
         foreach ($vote_pertanyaan as $key => $value) {
             $nama = User::where('id', $value->user_id)->value('name');
             $reputasi_pertanyaan[$nama] =  $vote->where('pertanyaan_id', $id)->sum('reputasi');
-        } 
+        }
+        
         if ($vote_jawaban->first() == null){
             return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 
                                                 'pertanyaan' => $pertanyaan, 
@@ -65,6 +66,7 @@ class PertanyaanController extends Controller {
     public function create() {
         return view('pertanyaan.form');
     }
+
     public function store(Request $request) {
         $data = $request->all();
         unset($data['_token']);

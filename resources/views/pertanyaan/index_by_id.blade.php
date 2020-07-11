@@ -36,7 +36,8 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"> Pertanyaan : <?php echo $pertanyaan->isi ; ?> </h3><br>
+                            <h3 class="card-title"> Pertanyaan : </h3><br>
+                            <?php echo $pertanyaan->isi ; ?> 
                             <!-- Upvote pertanyaan -->
                             <article class="post" data-pertanyaan_id="{{ $pertanyaan->id }}">
                             @if (Auth::check())
@@ -235,15 +236,14 @@ var modal = $(this)
 
 modal.find('.modal-body form').attr("action", path)
 modal.find('.modal-body h3').html(pertanyaan)
-})
+});
 
-// {{-- script khusus summernote --}}
-<script>
-    $(document).ready(function() {
-        $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
-    });
-</script>
-// {{-- /script khusus summernote --}}
 
+// script khusus summernote 
+$(document).ready(function() {
+    $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
+});
+// script khusus summernote
 </script>
+
 @endpush

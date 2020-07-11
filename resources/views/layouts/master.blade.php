@@ -14,8 +14,11 @@
 	<link href={{ asset("/Bona/common-css/bootstrap.css")}} rel="stylesheet">
 	<link href={{ asset("/Bona/common-css/ionicons.css")}} rel="stylesheet">
 
-	<link href={{ asset("/Bona/layout-1/css/styles.css")}} rel="stylesheet">
-    <link href={{ asset("/Bona/layout-1/css/responsive.css")}} rel="stylesheet">
+	{{-- <link href={{ asset("/Bona/layout-1/css/styles.css")}} rel="stylesheet">
+	<link href={{ asset("/Bona/layout-1/css/responsive.css")}} rel="stylesheet"> --}}
+	
+	<link href={{ asset("/Bona/single-post-1/css/styles.css")}} rel="stylesheet">
+	<link href={{ asset("/Bona/single-post-1/css/responsive.css")}} rel="stylesheet">
     
     
     <link rel="stylesheet" href= {{asset("/summernote-0.8.18-dist/summernote.min.css")}}> {{--WYSIWYG--}}
