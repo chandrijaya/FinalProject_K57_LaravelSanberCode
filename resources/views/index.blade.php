@@ -20,13 +20,13 @@
             <p>Untuk mencoba, silahkan klik tombol di bawah ini.</p>
             <p><br></p>
             <p class="lead">
-              <a class="btn btn-primary btn-lg" href="/forum" role="button">Menuju Artikel</a>
+              <a class="btn btn-primary btn-lg" href="/pertanyaan" role="button">Menuju Artikel</a>
             </p>
         @else
             <p>Untuk mencoba, silahkan klik tombol di bawah ini. Loginlah terlebih dahulu</p>
             <p><br></p>
             <p class="lead">
-              <a class="btn btn-primary btn-lg" href="/forum" role="button">Menuju Artikel</a>
+              <a class="btn btn-primary btn-lg" href="/pertanyaan" role="button">Menuju Forum</a>
               <a class="btn btn-primary btn-lg" href="/login" role="button">Login dulu</a>
             </p>
         @endauth

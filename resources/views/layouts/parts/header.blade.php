@@ -38,8 +38,16 @@
                 @if (Route::has('login'))
                     <div class="top-right links">
                         @auth
-                            <a href="#">{{ ucfirst(Auth()->user()->name)}}</a>
-                            <a href="{{url('logout')}}" class="text-danger">Logout</a>
+                            <a href="#">{{ Auth::user()->name }}</a>
+                            <a class="text-danger" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                {{ __('Logout') }}
+                            </a>
+
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                            {{-- <a href="{{url('logout')}}" class="text-danger">Logout</a> --}}
                         @else
                             <a href="{{ route('login') }}">Login</a>
             
@@ -56,8 +64,8 @@
 
 			<ul class="main-menu visible-on-click" id="main-menu">
 				<li><a href="/">Home</a></li>
-				<li><a href="/forum">Forum</a></li>
-				<li><a href="/forum/create">Create</a></li>
+				<li><a href="/pertanyaan">Forum</a></li>
+				<li><a href="/pertanyaan/create">Create</a></li>
 			</ul><!-- main-menu -->
 
 			<div class="src-area">

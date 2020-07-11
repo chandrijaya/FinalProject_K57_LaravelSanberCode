@@ -15,27 +15,23 @@ Route::get('/', function () {
     return view('index');
 });
 
-// Route::get('/forum', 'ForumController@index'); // menampilkan semua
-Route::get('/forum', function () {
-    return view('forum.index');
-});
-
-Route::get('/forum/create', function () {
-    return view('forum.create');
-});
-
-// Route::group(['middleware' => 'auth'], function(){
-
-//     Route::get('/forum/create', 'ForumController@create'); // menampilkan halaman form
-//     Route::post('/forum', 'ForumController@store'); // menyimpan data    
-//     Route::get('/forum/{id}', 'ForumController@show'); // menampilkan detail item dengan id 
-//     Route::get('/forum/{id}/edit', 'ForumController@edit'); // menampilkan form untuk edit item
-//     Route::put('/forum/{id}', 'ForumController@update'); // menyimpan perubahan dari form edit
-//     Route::delete('/forum/{id}', 'ForumController@destroy'); // menghapus data dengan id
-
-// });
 
 Auth::routes();
-Route::get('/logout', 'Auth\LoginController@logout');
+Route::get('/', 'HomeController@index')->name('home');
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/pertanyaan', 'PertanyaanController@index');
+Route::group(['middleware' => 'auth'], function() {
+    
+    Route::get('/pertanyaan/create', 'PertanyaanController@create');
+    
+    Route::get('/pertanyaan/{id}/edit', 'PertanyaanController@edit');
+    Route::post('/pertanyaan', 'PertanyaanController@store');
+    Route::put('/pertanyaan/{id}', 'PertanyaanController@update');
+    Route::delete('/pertanyaan/{id}', 'PertanyaanController@delete');
+
+    Route::get('/jawaban/{pertanyaan_id}', 'JawabanController@index');
+    Route::post('/jawaban/{pertanyaan_id}', 'JawabanController@store');
+
+    Route::post('/vote', 'PertanyaanController@vote')->name('vote');
+    Route::post('/vote-jawaban', 'PertanyaanController@vote_jawaban')->name('vote-jawaban');
+});
