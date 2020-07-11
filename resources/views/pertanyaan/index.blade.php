@@ -59,7 +59,7 @@
                                                 @endauth
                                             </article>
                                             <!-- End fitur like -->
-                                            <p class="float-left" id="sum_upvote"> Upvote : {{ $vote->where('pertanyaan_id', $item->id)->get()->sum('value') }} </p>
+                                            <p class="float-left" id="sum_upvote"> Vote : {{ $vote->where('pertanyaan_id', $item->id)->get()->sum('value') }} </p>
                                             <ul class="pagination pagination-sm m-0 d-flex justify-content-end">
                                                 @auth
                                                     @if (Auth::user()->id != $item->user_id) 
@@ -134,14 +134,14 @@
 @endsection
 
 @push('scripts')
-
+<script>
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
 
-var urlVote = '{{ route('vote') }}';
+var urlVote = "{{ route('vote') }}";
 var token = '{{ Session::token() }}';
 var pertanyaan_id = 0;
 
@@ -182,12 +182,13 @@ modal.find('.modal-body form').attr("action", path)
 modal.find('.modal-body h3').html(pertanyaan)
 })
 
-{{-- script khusus summernote --}}
+// {{-- script khusus summernote --}}
 <script>
     $(document).ready(function() {
         $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
     });
 </script>
-{{-- /script khusus summernote --}}
+// {{-- /script khusus summernote --}}
 
+</script>
 @endpush

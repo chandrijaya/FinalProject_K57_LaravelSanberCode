@@ -13,7 +13,7 @@ use App\VotePertanyaan;
 
 class PertanyaanController extends Controller {
     public function __construct() {
-        $this->middleware('auth')->except(['index']); //index tidak diberi authentication
+        $this->middleware('auth', ['except' => ['index', 'show']]); //index tidak diberi authentication
     }
 
     // Menampilkan semua pertanyaan dengan eloquent

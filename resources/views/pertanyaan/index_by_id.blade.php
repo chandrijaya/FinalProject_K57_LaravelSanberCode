@@ -39,16 +39,19 @@
                             <h3 class="card-title"> Pertanyaan : <?php echo $pertanyaan->isi ; ?> </h3><br>
                             <!-- Upvote pertanyaan -->
                             <article class="post" data-pertanyaan_id="{{ $pertanyaan->id }}">
+                            @if (Auth::check())
                                 @if (Auth::user()->id != $pertanyaan->user_id)
                                 <div class="interaction">
                                     <a href="#" class="vote">{{ Auth::user()->vote_pertanyaan()->where('pertanyaan_id', $pertanyaan->id)->first() ? Auth::user()->vote_pertanyaan()->where('pertanyaan_id', $pertanyaan->id)->first()->value == 1 ? 'Kamu upvote pertanyaan ini' : 'Upvote' : 'Upvote'  }}</a> |
                                     <a href="#" class="vote">{{ Auth::user()->vote_pertanyaan()->where('pertanyaan_id', $pertanyaan->id)->first() ? Auth::user()->vote_pertanyaan()->where('pertanyaan_id', $pertanyaan->id)->first()->value == -1 ? 'Kamu downvote pertanyaan ini' : 'Downvote' : 'Downvote'  }}</a>
                                 </div>
                                 @endif
-                                <p id="sum_upvote"> Upvote : {{ $vote->where('pertanyaan_id', $pertanyaan->id)->get()->sum('value') }} </p>
+                            @endif
+                                <p id="sum_upvote"> Vote : {{ $vote->where('pertanyaan_id', $pertanyaan->id)->get()->sum('value') }} </p>
                             </article>
                             <!-- End upvote pertanyaan -->
                             <ul class="pagination pagination-sm m-0 float-right">
+                            @if (Auth::check())
                                 @if (Auth::user()->id != $pertanyaan->user_id)
                                 <li class="page-item">
                                     <button title="Jawab" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-pertanyaan="{{ $pertanyaan->isi }}" data-path="/jawaban/{{ $pertanyaan->id }}" data-target="#jawab">
@@ -73,6 +76,7 @@
                                     </form>
                                 </li>
                                 @endif
+                            @endif
                             </ul>
                         </div>
 
@@ -124,13 +128,15 @@
                                             <?php  print_r($jawaban['isi']); ?>
                                             <p>Dijawab oleh : {{ $jawaban->user->name }} </p>
                                             <article class="post" data-jawaban_id="{{ $jawaban->id }}">
+                                            @if (Auth::check())
                                                 @if (Auth::user()->id != $jawaban->user->id)
                                                 <div class="interaction">
                                                     <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
                                                     <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
                                                 </div>
                                                 @endif
-                                                <p id="sum_upvote"> Upvote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
+                                            @endif
+                                                <p id="sum_upvote"> Vote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
                                             </article>
                                         </td>
                                     </tr>
@@ -153,14 +159,14 @@
 @endsection
 
 @push('scripts')
-
+<script>
 $.ajaxSetup({
 headers: {
 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 }
 });
 
-var urlVote = '{{ route('vote') }}';
+var urlVote = "{{ route('vote') }}";
 var token = '{{ Session::token() }}';
 var pertanyaan_id = 0;
 
@@ -191,7 +197,7 @@ event.target.previousElementSibling.innerText = 'Upvote';
 
 });
 
-var urlVoteJawaban = '{{ route('vote-jawaban') }}';
+var urlVoteJawaban = "{{ route('vote-jawaban') }}";
 var jawaban_id = 0;
 
 $('.vote-jawaban').on('click', function(event) {
@@ -231,13 +237,13 @@ modal.find('.modal-body form').attr("action", path)
 modal.find('.modal-body h3').html(pertanyaan)
 })
 
-{{-- script khusus summernote --}}
+// {{-- script khusus summernote --}}
 <script>
     $(document).ready(function() {
         $('#message-text').summernote(); // Ubah #message-text sesuai id pada tag textarea
     });
 </script>
-{{-- /script khusus summernote --}}
+// {{-- /script khusus summernote --}}
 
-
+</script>
 @endpush
