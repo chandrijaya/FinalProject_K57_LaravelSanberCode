@@ -12,6 +12,8 @@ use App\Pertanyaan;
 use App\Jawaban;
 use App\VoteJawaban;
 use App\VotePertanyaan;
+use App\KomentarPertanyaan;
+use App\KomentarJawaban;
 
 
 class PertanyaanController extends Controller {
@@ -31,6 +33,8 @@ class PertanyaanController extends Controller {
     public static function show($id) {
         $daftar_jawaban = Jawaban::where('pertanyaan_id', $id)->get();
         $pertanyaan = Pertanyaan::find($id);
+
+        $komentar_pertanyaan = KomentarPertanyaan::where('pertanyaan_id', $id)->get();
 
         $vote = new VotePertanyaan;
         $vote_jawaban = new VoteJawaban;
@@ -54,7 +58,13 @@ class PertanyaanController extends Controller {
                 $reputasi_pertanyaan[$nama] =  $vote->where('penanya_id', $value->user_id)->sum('reputasi');
             } 
         }
-        return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 'pertanyaan' => $pertanyaan, 'vote' => $vote, 'vote_jawaban' => $vote_jawaban, 'reputasi_jawaban' => $reputasi_jawaban, 'reputasi_pertanyaan' => $reputasi_pertanyaan]);
+        return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 
+                                'pertanyaan' => $pertanyaan,
+                                'komentar_pertanyaan' => $komentar_pertanyaan, 
+                                'vote' => $vote, 
+                                'vote_jawaban' => $vote_jawaban, 
+                                'reputasi_jawaban' => $reputasi_jawaban, 
+                                'reputasi_pertanyaan' => $reputasi_pertanyaan]);
     }
 
 

@@ -39,6 +39,11 @@ Route::group(['middleware' => 'auth'], function() {
     Route::get('/jawaban/{pertanyaan_id}', 'JawabanController@index');
     Route::post('/jawaban/{pertanyaan_id}', 'JawabanController@store');
 
+    Route::post('/komentar-pertanyaan/{pertanyaan_id}', 'KomentarPertanyaanController@store');
+    Route::delete('/komentar-pertanyaan/{pertanyaan_id}', 'KomentarPertanyaanController@delete');
+
+    
+
     Route::post('/vote', 'PertanyaanController@vote')->name('vote');
     Route::post('/vote-jawaban', 'PertanyaanController@vote_jawaban')->name('vote-jawaban');
 });

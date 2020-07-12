@@ -82,6 +82,48 @@
                                 @endif
                             @endif
                             </ul>
+                            {{-- TABLE KOMENTAR PERTANYAAN --}}
+                            @auth
+                                <form role="form" action="/komentar-pertanyaan/{{$pertanyaan->id}}" method="post">
+                                    @csrf
+                                    <div class="form-group">
+                                        <label for="komentar" class="col-form-label">Komentar:</label>
+                                        <input name="komentar" class="form-control" id="komentar">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" class="btn btn-success btn-sm">Komentar</button>
+                                    </div>
+                                </form>
+                            @endauth
+                            <div class="container">
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            @foreach ($komentar_pertanyaan as $item=>$p_komentar) 
+                                            <td>
+                                                <p>Komentar {{ $p_komentar->user->name }} : </p>
+                                            </td>
+                                            <td>
+                                                {{$p_komentar['isi']}}
+                                            </td>
+                                            <td>
+                                                @auth
+                                                    @if (Auth::user()->id ==  $p_komentar->user->id) 
+                                                        <form action="/komentar-pertanyaan/{{ $p_komentar['pertanyaan_id'] }}" method="post">
+                                                            @method('DELETE')
+                                                            @csrf
+                                                            <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                                <i class="fas fa-minus-square"> Hapus </i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                @endauth
+                                            </td>
+                                            @endforeach
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <!-- Modal Bootstrap Jawaban -->
