@@ -39,6 +39,9 @@
                             <h3 class="card-title"> Pertanyaan : </h3><br>
                             <?php echo $pertanyaan->isi ; ?> 
                             <!-- Upvote pertanyaan -->
+                            @foreach($pertanyaan->tags as $tag) 
+                                <button class="btn btn-default btn-sm"> {{$tag->nama}} </button>
+                            @endforeach
                             <article class="post" data-pertanyaan_id="{{ $pertanyaan->id }}">
                             @if (Auth::check())
                                 @if (Auth::user()->id != $pertanyaan->user_id)

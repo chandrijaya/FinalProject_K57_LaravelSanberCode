@@ -40,6 +40,10 @@
                     <label for="judul">Judul</label>
                     <input type="text" class="form-control" name="judul" id="judul" placeholder="Masukkan judul">
                   </div>
+                  <div class="form-group">
+                    <label for="tags">Tag</label>
+                    <input type="text" class="form-control" name="tags" id="tags" placeholder="Masukkan tag. Jika lebih dari satu, pisahkan dengan koma">
+                  </div>
                   <p><br></p>
                   <!-- textarea -->
                   <div class="form-group">

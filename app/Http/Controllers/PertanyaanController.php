@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\User;
+use App\Tag;
 use App\Pertanyaan;
 use App\Jawaban;
 use App\VoteJawaban;
@@ -20,7 +21,8 @@ class PertanyaanController extends Controller {
 
     // Menampilkan semua pertanyaan dengan eloquent
     public function index() {
-        $pertanyaan = Pertanyaan::all();
+        $pertanyaan = Pertanyaan::get();
+        // dd($pertanyaan->tags);
         $vote = new VotePertanyaan;
         return view('pertanyaan.index', compact('pertanyaan', 'vote'));
     }
@@ -35,32 +37,26 @@ class PertanyaanController extends Controller {
         
         $jawaban = Jawaban::get();
         $vote_pertanyaan = Pertanyaan::get();
-        foreach ($vote_pertanyaan as $key => $value) {
-            $nama = User::where('id', $value->user_id)->value('name');
-            $reputasi_pertanyaan[$nama] =  $vote->where('pertanyaan_id', $id)->sum('reputasi');
-        }
-        
-        if ($vote_jawaban->first() == null){
-            return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 
-                                                'pertanyaan' => $pertanyaan, 
-                                                'vote' => $vote, 
-                                                'vote_jawaban' => $vote_jawaban, 
-                                                'reputasi_pertanyaan' => $reputasi_pertanyaan]);
-        }
-
-        else {
+        if ($jawaban->first() == null) {
+            $reputasi_jawaban = null;            
+        } else {
             foreach ($jawaban as $key => $value) {
                 $nama = User::where('id', $value->user_id)->value('name');
-                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');               
+                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');            
             }
-            return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 
-                                            'pertanyaan' => $pertanyaan, 
-                                            'vote' => $vote, 
-                                            'vote_jawaban' => $vote_jawaban, 
-                                            'reputasi_jawaban' => $reputasi_jawaban, 
-                                            'reputasi_pertanyaan' => $reputasi_pertanyaan]);
         }
+
+        if ($vote_pertanyaan->first() == null) {
+            $reputasi_pertanyaan = null;
+        } else {
+            foreach ($vote_pertanyaan as $key => $value) {
+                $nama = User::where('id', $value->user_id)->value('name');
+                $reputasi_pertanyaan[$nama] =  $vote->where('penanya_id', $value->user_id)->sum('reputasi');
+            } 
+        }
+        return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 'pertanyaan' => $pertanyaan, 'vote' => $vote, 'vote_jawaban' => $vote_jawaban, 'reputasi_jawaban' => $reputasi_jawaban, 'reputasi_pertanyaan' => $reputasi_pertanyaan]);
     }
+
 
     // Buat pertanyaan
     public function create() {
@@ -69,12 +65,23 @@ class PertanyaanController extends Controller {
 
     public function store(Request $request) {
         $data = $request->all();
-        unset($data['_token']);
+        // unset($data['_token']);
         $pertanyaan = Pertanyaan::create([
             'judul' => $data['judul'],
             'isi' => $data['isi'],
             'user_id' => Auth::id()
         ]);
+        $tagArr = explode(',', $request->tags);
+        $tagsMulti  = [];
+        foreach($tagArr as $strTag){
+            $tagArrAssc["nama"] = $strTag;
+            $tagsMulti[] = $tagArrAssc;
+        }
+        // Create Tags baru
+        foreach($tagsMulti as $tagCheck){
+            $tag = Tag::firstOrCreate($tagCheck);
+            $pertanyaan->tags()->attach($tag->id);
+        }
         Alert::success('Menambah Pertanyaan', 'Anda berhasil menambah sebuah pertanyaan');
         return redirect('/pertanyaan'); 
     }
@@ -139,6 +146,7 @@ class PertanyaanController extends Controller {
         }
         $vote->value = $is_vote;
         $vote->reputasi = $reputasi;
+        $vote->penanya_id = $user_id_pertanyaan;
         if ($update && $user_id_pertanyaan != $user_id_online) {
             $vote->update();
         } elseif ($user_id_pertanyaan != $user_id_online) {

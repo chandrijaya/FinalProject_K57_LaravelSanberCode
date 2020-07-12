@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVotePertanyaanTable extends Migration
+class CreateTagPertanyaanTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,13 @@ class CreateVotePertanyaanTable extends Migration
      */
     public function up()
     {
-        Schema::create('vote_pertanyaan', function (Blueprint $table) {
+        Schema::create('tag_pertanyaan', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('tag_id');
             $table->unsignedBigInteger('pertanyaan_id');
-            $table->unsignedBigInteger('penanya_id');
-            $table->integer('value');
-            $table->integer('reputasi');
-            $table->foreign('user_id')->references('id')->on('users');
+
+            $table->foreign('tag_id')->references('id')->on('tags');
             $table->foreign('pertanyaan_id')->references('id')->on('pertanyaan');
-            $table->foreign('penanya_id')->references('user_id')->on('pertanyaan');
-            $table->timestamps();
         });
     }
 
@@ -34,6 +30,6 @@ class CreateVotePertanyaanTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vote_pertanyaan');
+        Schema::dropIfExists('tag_pertanyaan');
     }
 }

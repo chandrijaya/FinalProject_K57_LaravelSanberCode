@@ -46,6 +46,9 @@
                                             <!-- Ini buat fitur like -->
                                             <article class="post" data-pertanyaan_id="{{ $item->id }}">
                                                 <div>{{Str::limit(strip_tags($item->isi),300, '......')}}</div>
+                                                @foreach($pertanyaan->find($item->id)->tags as $tag) 
+                                                    <button class="btn btn-success btn-sm"> {{$tag->nama}} </button>
+                                                @endforeach
                                                 <div class="info">
                                                     Ditanya oleh {{ $item->user->name }} pada {{ $item->created_at }}
                                                 </div>

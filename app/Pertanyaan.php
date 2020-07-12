@@ -17,5 +17,8 @@
         public function komentar_pertanyaan() {
             return $this->hasMany('App\KomentarPertanyaan');
         }
+        public function tags() {
+            return $this->belongsToMany('App\Tag', 'tag_pertanyaan', 'pertanyaan_id', 'tag_id');
+        }
     }
 ?>
