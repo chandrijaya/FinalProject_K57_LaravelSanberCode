@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Jawaban;
 use App\Pertanyaan;
+use App\VoteJawaban;
 use App\KomentarJawaban;
 
 class JawabanController extends Controller
@@ -28,6 +29,8 @@ class JawabanController extends Controller
     }
 
     public function delete($q_id, $qa_id) {
+        $komentar_jawaban = KomentarJawaban::where('jawaban_id', $qa_id)->forceDelete();
+        $vote_pertanyaan_removed = VoteJawaban::where('jawaban_id', $qa_id)->forceDelete();
         $jawaban_removed = Jawaban::where('id', $qa_id)->forceDelete();
         return redirect('/pertanyaan/'.$q_id);
     }

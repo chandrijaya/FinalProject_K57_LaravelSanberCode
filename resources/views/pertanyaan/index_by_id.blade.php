@@ -176,54 +176,56 @@
                                             <p>Dijawab oleh : {{ $jawaban->user->name }} </p>
                                             <article class="post" data-jawaban_id="{{ $jawaban->id }}">
                                                 @if (Auth::check())
-                                                @if (Auth::user()->id != $jawaban->user->id)
-                                                <div class="interaction">
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
-                                                </div>
-                                                @endif
+                                                    @if (Auth::user()->id != $jawaban->user->id)
+                                                    <div class="interaction">
+                                                        <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
+                                                        <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
+                                                    </div>
+                                                    @endif
                                                 @endif
                                                 <p id="sum_upvote"> Vote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
+                                                @if($jawaban->is_selected == 1)
+                                                    <strong>This is Best Answer</strong>
+                                                @endif
                                             </article>
                                             @auth
-                                            @if (Auth::user()->id == $jawaban->user->id)
-                                            <div class="float-right">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}" method="post">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Hapus Jawaban </i>
+                                                @if (Auth::user()->id == $jawaban->user->id)
+                                                <div class="float-right">
+                                                    <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}" method="post">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                            <i class="fas fa-minus-square"> Hapus Jawaban </i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                @endif
+                                                <div class="d-flex justify-content-end">
+                                                    <button title="Komentar" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-komentarjawaban="{{ $jawaban['isi'] }}" data-path="/jawaban/{{ $pertanyaan->id }}/komentar" data-target="#komentar_jawaban">
+                                                        <i class="fas fa-plus-square"> Komentar </i>
                                                     </button>
-                                                </form>
-                                            </div>
-                                            @endif
-                                            <div class="d-flex justify-content-end">
-                                                <button title="Komentar" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-komentarjawaban="{{ $jawaban['isi'] }}" data-path="/jawaban/{{ $pertanyaan->id }}/komentar" data-target="#komentar_jawaban">
-                                                    <i class="fas fa-plus-square"> Komentar </i>
-                                                </button>
-                                            </div>
-                                            @if (Auth::user()->id == $pertanyaan->user_id)
-                                            @if ($jawaban->is_selected != 1)
-                                            <div style="float:right">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/select" method="post">
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Best! </i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @else
-                                            <strong>This is Best Answer</strong>
-                                            <div style="float:right">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/unselect" method="post">
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Revoke Best! </i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @endif
-                                            @endif
+                                                </div>
+                                                @if (Auth::user()->id == $pertanyaan->user_id)
+                                                    @if ($jawaban->is_selected != 1)
+                                                    <div style="float:right">
+                                                        <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/select" method="post">
+                                                            @csrf
+                                                            <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
+                                                                <i class="fas fa-minus-square"> Best! </i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    @else
+                                                    <div style="float:right">
+                                                        <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/unselect" method="post">
+                                                            @csrf
+                                                            <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                                <i class="fas fa-minus-square"> Revoke Best! </i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    @endif
+                                                @endif
                                             @endauth
                                             <h6>Komentar :</h6>
                                             <hr>
