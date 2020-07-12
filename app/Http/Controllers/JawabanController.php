@@ -21,7 +21,38 @@ class JawabanController extends Controller
             'pertanyaan_id' => $id,
             'isi' => $data['isi'],
             'user_id' => Auth::id(),
+            'is_selected' => 0
         ]);
-        return redirect('/pertanyaan/'.$id);
+        return redirect('/pertanyaan/'.$id.'#answer');
+    }
+
+    public function delete($q_id, $qa_id) {
+        $jawaban_removed = Jawaban::where('id', $qa_id)->forceDelete();
+        return redirect('/pertanyaan/'.$q_id);
+    }
+
+    public static function selected($q_id, $qa_id) {
+        // Kembalikan jawaban lain menjadi biasa
+        $jawaban = Jawaban::where([
+            ['pertanyaan_id', $q_id],
+            ['is_selected', 1]
+        ])->update([
+            'is_selected' => 0,
+        ]);
+        // Buat jawaban dipilih menjadi best
+        $jawaban = Jawaban::where('id', $qa_id)
+            ->update([
+            'is_selected' => 1,
+        ]);
+        return redirect('/pertanyaan/'.$q_id);
+    }
+
+    public static function unselected($q_id, $qa_id) {
+        // Kembalikan jawaban dipilih menjadi biasa
+        $jawaban = Jawaban::where('id', $qa_id)
+            ->update([
+            'is_selected' => 0,
+        ]);
+        return redirect('/pertanyaan/'.$q_id);
     }
 }

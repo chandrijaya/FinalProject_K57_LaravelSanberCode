@@ -42,11 +42,13 @@ class PertanyaanController extends Controller {
         $jawaban = Jawaban::get();
         $vote_pertanyaan = Pertanyaan::get();
         if ($jawaban->first() == null) {
-            $reputasi_jawaban = null;            
+            $reputasi_jawaban = null;
+            $best_jawaban = null;         
         } else {
             foreach ($jawaban as $key => $value) {
                 $nama = User::where('id', $value->user_id)->value('name');
-                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');            
+                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');
+                $best_jawaban[$value->id] = $value->is_selected;
             }
         }
 
@@ -64,7 +66,8 @@ class PertanyaanController extends Controller {
                                 'vote' => $vote, 
                                 'vote_jawaban' => $vote_jawaban, 
                                 'reputasi_jawaban' => $reputasi_jawaban, 
-                                'reputasi_pertanyaan' => $reputasi_pertanyaan]);
+                                'reputasi_pertanyaan' => $reputasi_pertanyaan,
+                                'best_jawaban' => $best_jawaban]);
     }
 
 
@@ -118,6 +121,8 @@ class PertanyaanController extends Controller {
         Alert::warning('Hapus Pertanyaan', 'Apakah anda yakin ingin menghapus pertanyaan?');
         $vote_pertanyaan_removed = VotePertanyaan::where('pertanyaan_id', $id)->forceDelete();
         $jawaban_removed = Jawaban::where('pertanyaan_id', $id)->forceDelete();
+        $komentar_pertanyaan = KomentarPertanyaan::where('pertanyaan_id', $id)->forceDelete();
+        $cek = Pertanyaan::find($id)->forceDelete();
         $pertanyaan_removed = Pertanyaan::where('id', $id)->forceDelete();
         return redirect('/pertanyaan');
     }

@@ -20,5 +20,13 @@
         public function tags() {
             return $this->belongsToMany('App\Tag', 'tag_pertanyaan', 'pertanyaan_id', 'tag_id');
         }
+
+        public static function boot() {
+            parent::boot();
+    
+            static::deleting(function($pertanyaan) { // before delete() method call this
+                 $pertanyaan->tags()->detach();
+            });
+        }
     }
 ?>

@@ -23,12 +23,12 @@ class KomentarPertanyaanController extends Controller
             'isi' => $data['komentar'],
             'user_id' => Auth::id(),
         ]);
-        return redirect('/pertanyaan/'.$id);
+        return redirect('/pertanyaan/'.$id.'#comment');
     }
 
-    public function delete($id) {
+    public function delete($q_id, $qc_id) {
         Alert::warning('Hapus Komentar', 'Apakah anda yakin ingin menghapus komentar pertanyaan?');
-        $p_komentar_removed = KomentarPertanyaan::where('pertanyaan_id', $id)->forceDelete();
-        return redirect('/pertanyaan/'.$id);
+        $p_komentar_removed = KomentarPertanyaan::where('id', $qc_id)->forceDelete();
+        return redirect('/pertanyaan/'.$q_id);
     }
 }

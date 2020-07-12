@@ -83,47 +83,48 @@
                             @endif
                             </ul>
                             {{-- TABLE KOMENTAR PERTANYAAN --}}
+                            <p><br><br></p>
                             @auth
                                 <form role="form" action="/komentar-pertanyaan/{{$pertanyaan->id}}" method="post">
                                     @csrf
                                     <div class="form-group">
-                                        <label for="komentar" class="col-form-label">Komentar:</label>
+                                        <label for="komentar" class="col-form-label"></label>
                                         <input name="komentar" class="form-control" id="komentar">
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-success btn-sm">Komentar</button>
-                                    </div>
+                                        <button type="submit" class="btn btn-success btn-sm" style="float:right">Komentar</button>
                                 </form>
                             @endauth
-                            <div class="container">
-                                <table class="table">
-                                    <tbody>
-                                        <tr>
-                                            @foreach ($komentar_pertanyaan as $item=>$p_komentar) 
-                                            <td>
-                                                <p>Komentar {{ $p_komentar->user->name }} : </p>
-                                            </td>
-                                            <td>
-                                                {{$p_komentar['isi']}}
-                                            </td>
-                                            <td>
-                                                @auth
-                                                    @if (Auth::user()->id ==  $p_komentar->user->id) 
-                                                        <form action="/komentar-pertanyaan/{{ $p_komentar['pertanyaan_id'] }}" method="post">
-                                                            @method('DELETE')
-                                                            @csrf
-                                                            <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                                                <i class="fas fa-minus-square"> Hapus </i>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                @endauth
-                                            </td>
-                                            @endforeach
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <p><br><br><br></p>
+                            @foreach ($komentar_pertanyaan as $item=>$p_komentar)
+                            <div class="row" style="border-top: 1px solid black" id="comment">
+                                <div class="col-md-2">
+                                    <p><br></p>
+                                    <p>{{ $p_komentar->user->name }} : </p>
+                                    <p><br></p>
+                                    
+                                </div>
+                                <div class="col-md-9">
+                                    <p><br></p>
+                                    {{$p_komentar['isi']}}
+                                    <p><br></p>
+                                </div>
+                                <div class="col-md-1">
+                                    <p><br></p>
+                                    @auth
+                                        @if (Auth::user()->id ==  $p_komentar->user->id) 
+                                            <form action="/komentar-pertanyaan/{{ $p_komentar['pertanyaan_id'] }}/{{ $p_komentar['id'] }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                    <i class="fas fa-minus-square"> Hapus </i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endauth
+                                    <p><br></p>
+                                </div>
                             </div>
+                            @endforeach
                         </div>
 
                         <!-- Modal Bootstrap Jawaban -->
@@ -157,7 +158,7 @@
                         </div>
 
                         <!-- /.TABLE JAWABAN-->
-                        <div class="card-body p-0">
+                        <div class="card-body p-0" id="answer">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -174,16 +175,51 @@
                                             <?php  print_r($jawaban['isi']); ?>
                                             <p>Dijawab oleh : {{ $jawaban->user->name }} </p>
                                             <article class="post" data-jawaban_id="{{ $jawaban->id }}">
-                                            @if (Auth::check())
-                                                @if (Auth::user()->id != $jawaban->user->id)
-                                                <div class="interaction">
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
-                                                </div>
+                                                @if (Auth::check())
+                                                    @if (Auth::user()->id != $jawaban->user->id)
+                                                    <div class="interaction">
+                                                        <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
+                                                        <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
+                                                    </div>
+                                                    @endif
                                                 @endif
-                                            @endif
                                                 <p id="sum_upvote"> Vote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
                                             </article>
+                                            @auth
+                                                @if (Auth::user()->id ==  $jawaban->user->id)
+                                                <div style="float:right">
+                                                    <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}" method="post">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                            <i class="fas fa-minus-square"> Hapus Jawaban </i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                @endif
+                                                @if (Auth::user()->id == $pertanyaan->user_id)
+                                                    @if ($jawaban->is_selected != 1) 
+                                                    <div style="float:right">
+                                                        <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/select" method="post">
+                                                            @csrf
+                                                            <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
+                                                                <i class="fas fa-minus-square"> Best! </i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    @else
+                                                    <strong>This is Best Answer</strong>
+                                                        <div style="float:right">
+                                                            <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/unselect" method="post">
+                                                                @csrf
+                                                                <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                                    <i class="fas fa-minus-square"> Revoke Best! </i>
+                                                                </button>
+                                                            </form>
+                                                        </div>       
+                                                    @endif                                     
+                                                @endif
+                                            @endauth
                                         </td>
                                     </tr>
                                     @endforeach
@@ -207,9 +243,9 @@
 @push('scripts')
 <script>
 $.ajaxSetup({
-headers: {
-'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-}
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
 });
 
 var urlVote = "{{ route('vote') }}";
@@ -217,61 +253,60 @@ var token = '{{ Session::token() }}';
 var pertanyaan_id = 0;
 
 $('.vote').on('click', function(event) {
-event.preventDefault();
-pertanyaan_id = event.target.parentNode.parentNode.dataset['pertanyaan_id'];
-var isVote = event.target.previousElementSibling == null;
-$.ajax({
-method: 'POST',
-url: urlVote,
-data: {isVote: isVote, pertanyaan_id: pertanyaan_id, _token: token},
-success: function (data) {
-console.log(data);
-},
-error: function (data, textStatus, errorThrown) {
-console.log(data);
-
-}
-})
-.done(function() {
-event.target.innerText = isVote ? event.target.innerText == 'Upvote' ? 'Kamu upvote pertanyaan ini' : 'Upvote' : event.target.innerText == 'Downvote' ? 'Kamu downvote pertanyaan ini' : 'Downvote';
-if (isVote) {
-event.target.nextElementSibling.innerText = 'Downvote';
-} else {
-event.target.previousElementSibling.innerText = 'Upvote';
-}
-});
-
+    event.preventDefault();
+    pertanyaan_id = event.target.parentNode.parentNode.dataset['pertanyaan_id'];
+    var isVote = event.target.previousElementSibling == null;
+    $.ajax({
+        method: 'POST',
+        url: urlVote,
+        data: {isVote: isVote, pertanyaan_id: pertanyaan_id, _token: token},
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (data, textStatus, errorThrown) {
+            console.log(data);
+        }
+    })
+    .done(function() {
+        event.target.innerText = isVote ? event.target.innerText == 'Upvote' ? 'Kamu upvote pertanyaan ini' : 'Upvote' : event.target.innerText == 'Downvote' ? 'Kamu downvote pertanyaan ini' : 'Downvote';
+        if (isVote) {
+            event.target.nextElementSibling.innerText = 'Downvote';
+        } else {
+            event.target.previousElementSibling.innerText = 'Upvote';
+        }
+    });
 });
 
 var urlVoteJawaban = "{{ route('vote-jawaban') }}";
 var jawaban_id = 0;
 
 $('.vote-jawaban').on('click', function(event) {
-event.preventDefault();
-jawaban_id = event.target.parentNode.parentNode.dataset['jawaban_id'];
-var isVote = event.target.previousElementSibling == null;
-$.ajax({
-method: 'POST',
-url: urlVoteJawaban,
-data: {isVote: isVote, jawaban_id: jawaban_id, _token: token},
-success: function (data) {
-console.log(data);
-},
-error: function (data, textStatus, errorThrown) {
-console.log(data);
+    event.preventDefault();
+    jawaban_id = event.target.parentNode.parentNode.dataset['jawaban_id'];
+    var isVote = event.target.previousElementSibling == null;
+    $.ajax({
+        method: 'POST',
+        url: urlVoteJawaban,
+        data: {isVote: isVote, jawaban_id: jawaban_id, _token: token},
+        success: function (data) {
+            console.log(data);
+        },
+        error: function (data, textStatus, errorThrown) {
+        console.log(data);
 
-}
-})
-.done(function() {
-event.target.innerText = isVote ? event.target.innerText == 'Upvote' ? 'Kamu upvote jawaban ini' : 'Upvote' : event.target.innerText == 'Downvote' ? 'Kamu downvote jawaban ini' : 'Downvote';
-if (isVote) {
-event.target.nextElementSibling.innerText = 'Downvote';
-} else {
-event.target.previousElementSibling.innerText = 'Upvote';
-}
+        }
+    })
+    .done(function() {
+    event.target.innerText = isVote ? event.target.innerText == 'Upvote' ? 'Kamu upvote jawaban ini' : 'Upvote' : event.target.innerText == 'Downvote' ? 'Kamu downvote jawaban ini' : 'Downvote';
+        if (isVote) {
+            event.target.nextElementSibling.innerText = 'Downvote';
+        } else {
+            event.target.previousElementSibling.innerText = 'Upvote';
+        }
+    });
+
 });
 
-});
 
 $('#jawab').on('show.bs.modal', function (event) {
 var button = $(event.relatedTarget)
