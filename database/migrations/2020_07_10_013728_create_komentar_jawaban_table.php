@@ -19,8 +19,8 @@ class CreateKomentarJawabanTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('jawaban_id');
             $table->timestamps();
-            $table->foreign('jawaban_id')->references('id')->on('jawaban');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('jawaban_id')->references('id')->on('jawaban')->onDelete("cascade");
+            $table->foreign('user_id')->references('id')->on('users')->onDelete("cascade");
         });
     }
 

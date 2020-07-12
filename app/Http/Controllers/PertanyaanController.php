@@ -35,6 +35,7 @@ class PertanyaanController extends Controller {
         $pertanyaan = Pertanyaan::find($id);
 
         $komentar_pertanyaan = KomentarPertanyaan::where('pertanyaan_id', $id)->get();
+        $komentar_jawaban = KomentarJawaban::get();
 
         $vote = new VotePertanyaan;
         $vote_jawaban = new VoteJawaban;
@@ -67,7 +68,8 @@ class PertanyaanController extends Controller {
                                 'vote_jawaban' => $vote_jawaban, 
                                 'reputasi_jawaban' => $reputasi_jawaban, 
                                 'reputasi_pertanyaan' => $reputasi_pertanyaan,
-                                'best_jawaban' => $best_jawaban]);
+                                'best_jawaban' => $best_jawaban,
+                                'komentar_jawaban' => $komentar_jawaban]);
     }
 
 
@@ -138,7 +140,33 @@ class PertanyaanController extends Controller {
             $is_vote = -1;
             $reputasi = -1;
         }
-        echo $is_vote;
+
+        // hitung reputasi
+        $vote = new VotePertanyaan;
+        $vote_jawaban = new VoteJawaban;
+        
+        $jawaban = Jawaban::get();
+        $vote_pertanyaan = Pertanyaan::get();
+        if ($jawaban->first() == null) {
+            $reputasi_jawaban = null;            
+        } else {
+            foreach ($jawaban as $key => $value) {
+                $nama = User::where('id', $value->user_id)->value('name');
+                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');            
+            }
+        }
+
+        if ($vote_pertanyaan->first() == null) {
+            $reputasi_pertanyaan = null;
+        } else {
+            foreach ($vote_pertanyaan as $key => $value) {
+                $nama = User::where('id', $value->user_id)->value('name');
+                $reputasi_pertanyaan[$nama] =  $vote->where('penanya_id', $value->user_id)->sum('reputasi');
+            } 
+        }
+        $reputasi_user = $reputasi_pertanyaan[$request['nama_user']] + $reputasi_jawaban[$request['nama_user']];
+        // end hitung reputasi
+
         $update = false;
         $pertanyaan = Pertanyaan::find($pertanyaan_id);
         if (!$pertanyaan) {
@@ -163,11 +191,23 @@ class PertanyaanController extends Controller {
         $vote->reputasi = $reputasi;
         $vote->penanya_id = $user_id_pertanyaan;
         if ($update && $user_id_pertanyaan != $user_id_online) {
-            $vote->update();
+            if ($reputasi_user >= 15 && $is_vote == -1) {
+                $vote->update();
+            } elseif ($is_vote == 1) {
+                $vote->update();
+            } else {
+                return view('pertanyaan.index');
+            }
         } elseif ($user_id_pertanyaan != $user_id_online) {
             $vote->user_id = $user->id;
             $vote->pertanyaan_id = $pertanyaan->id;
-            $vote->save();
+            if ($reputasi_user >= 15 && $is_vote == -1) {
+                $vote->save();
+            } elseif ($is_vote == 1) {
+                $vote->save();
+            } else {
+                return view('pertanyaan.index');
+            }
         }
         return null;
     }
@@ -183,7 +223,33 @@ class PertanyaanController extends Controller {
             $is_vote = -1;
             $reputasi = -1;
         }
-        echo $is_vote;
+
+        // hitung reputasi
+        $vote = new VotePertanyaan;
+        $vote_jawaban = new VoteJawaban;
+        
+        $jawaban = Jawaban::get();
+        $vote_pertanyaan = Pertanyaan::get();
+        if ($jawaban->first() == null) {
+            $reputasi_jawaban = null;            
+        } else {
+            foreach ($jawaban as $key => $value) {
+                $nama = User::where('id', $value->user_id)->value('name');
+                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');            
+            }
+        }
+
+        if ($vote_pertanyaan->first() == null) {
+            $reputasi_pertanyaan = null;
+        } else {
+            foreach ($vote_pertanyaan as $key => $value) {
+                $nama = User::where('id', $value->user_id)->value('name');
+                $reputasi_pertanyaan[$nama] =  $vote->where('penanya_id', $value->user_id)->sum('reputasi');
+            } 
+        }
+        $reputasi_user = $reputasi_pertanyaan[$request['nama_user']] + $reputasi_jawaban[$request['nama_user']];
+        // end hitung reputasi
+
         $update = false;
         $jawaban = Jawaban::find($jawaban_id);
         if (!$jawaban) {
@@ -208,11 +274,23 @@ class PertanyaanController extends Controller {
         $vote->reputasi = $reputasi;
         $vote->penjawab_id = $user_id_jawaban;
         if ($update && $user_id_jawaban != $user_id_online) {
-            $vote->update();
+            if ($reputasi_user >= 15 && $is_vote == -1) {
+                $vote->update();
+            } elseif ($is_vote == 1) {
+                $vote->update();
+            } else {
+                return view('pertanyaan.index');
+            }
         } elseif ($user_id_jawaban != $user_id_online) {
             $vote->user_id = $user->id;
             $vote->jawaban_id = $jawaban->id;
-            $vote->save();
+            if ($reputasi_user >= 15 && $is_vote == -1) {
+                $vote->save();
+            } elseif ($is_vote == 1) {
+                $vote->save();
+            } else {
+                return view('pertanyaan.index');
+            }
         }
         return null;
     }

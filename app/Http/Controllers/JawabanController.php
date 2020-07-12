@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Jawaban;
 use App\Pertanyaan;
+use App\KomentarJawaban;
 
 class JawabanController extends Controller
 {
@@ -54,5 +55,16 @@ class JawabanController extends Controller
             'is_selected' => 0,
         ]);
         return redirect('/pertanyaan/'.$q_id);
+    }
+    public static function komentar($id, Request $request) {
+        $data = $request->all();
+        // dd($data);
+        unset($data['_token']);
+        $jawaban = KomentarJawaban::create([
+            'jawaban_id' => $data['jawaban_id'],
+            'isi' => $data['isi'],
+            'user_id' => Auth::id(),
+        ]);
+        return redirect('/pertanyaan/'.$id);
     }
 }
