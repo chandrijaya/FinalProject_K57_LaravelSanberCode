@@ -19,7 +19,7 @@ class CreateVoteJawabanTable extends Migration
             $table->unsignedBigInteger('jawaban_id');
             $table->unsignedBigInteger('penjawab_id');
             $table->integer('value');
-            $table->integer('reputasi');
+            $table->integer('reputasi')->default(0);
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('jawaban_id')->references('id')->on('jawaban');
             $table->foreign('penjawab_id')->references('user_id')->on('jawaban');
