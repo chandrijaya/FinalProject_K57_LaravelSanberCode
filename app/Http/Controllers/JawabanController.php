@@ -59,15 +59,49 @@ class JawabanController extends Controller
         ]);
         return redirect('/pertanyaan/'.$q_id);
     }
-    public static function komentar($id, Request $request) {
-        $data = $request->all();
-        // dd($data);
-        unset($data['_token']);
-        $jawaban = KomentarJawaban::create([
-            'jawaban_id' => $data['jawaban_id'],
-            'isi' => $data['komentar'],
-            'user_id' => Auth::id(),
-        ]);
-        return redirect('/pertanyaan/'.$id);
+
+    // Vote jawaban dan reputasi
+    public function vote_jawaban(Request $request) {
+        $jawaban_id = $request['jawaban_id'];
+        $is_vote = $request['isVote'] === 'true';
+        if ($is_vote == 1) {
+            $is_vote = 1;
+            $reputasi = 10;
+        } else {
+            $is_vote = -1;
+            $reputasi = -1;
+        }
+        echo $is_vote;
+        $update = false;
+        $jawaban = Jawaban::find($jawaban_id);
+        if (!$jawaban) {
+            return null;
+        }
+        $user = Auth::user();
+        $vote = $user->vote_jawaban()->where('jawaban_id', $jawaban_id)->first();
+        $user_id_jawaban = $jawaban->user_id;
+        $user_id_online = Auth::id();
+
+        if ($vote) {
+            $already_vote = $vote->value;
+            $update = true;
+            if ($already_vote == $is_vote && $user_id_jawaban != $user_id_online) {
+                $vote->delete();
+                return null;
+            }
+        } else {
+            $vote = new VoteJawaban();
+        }
+        $vote->value = $is_vote;
+        $vote->reputasi = $reputasi;
+        $vote->penjawab_id = $user_id_jawaban;
+        if ($update && $user_id_jawaban != $user_id_online) {
+            $vote->update();
+        } elseif ($user_id_jawaban != $user_id_online) {
+            $vote->user_id = $user->id;
+            $vote->jawaban_id = $jawaban->id;
+            $vote->save();
+        }
+        return null;
     }
 }

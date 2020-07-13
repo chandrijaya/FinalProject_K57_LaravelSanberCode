@@ -20,8 +20,8 @@ class CreateJawabanTable extends Migration
             $table->unsignedBigInteger('pertanyaan_id');
             $table->boolean('is_selected')->nullable();
             $table->timestamps();
-            $table->foreign('pertanyaan_id')->references('id')->on('pertanyaan');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('pertanyaan_id')->references('id')->on('pertanyaan')->onDelete("cascade");
+            $table->foreign('user_id')->references('id')->on('users')->onDelete("cascade");
         });
     }
 

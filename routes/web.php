@@ -36,17 +36,18 @@ Route::group(['middleware' => 'auth'], function() {
     Route::put('/pertanyaan/{id}', 'PertanyaanController@update');
     Route::delete('/pertanyaan/{id}', 'PertanyaanController@delete');
 
+    Route::post('/komentar-pertanyaan/{pertanyaan_id}', 'KomentarPertanyaanController@store');
+    Route::delete('/komentar-pertanyaan/{pertanyaan_id}/{qc_id}', 'KomentarPertanyaanController@delete');
+
+    Route::post('/vote', 'PertanyaanController@vote')->name('vote');
+
     Route::get('/jawaban/{pertanyaan_id}', 'JawabanController@index');
     Route::post('/jawaban/{pertanyaan_id}', 'JawabanController@store');
     Route::delete('/jawaban/{pertanyaan_id}/{qa_id}', 'JawabanController@delete');
 
     Route::post('/jawaban/{pertanyaan_id}/{qa_id}/select', 'JawabanController@selected');
     Route::post('/jawaban/{pertanyaan_id}/{qa_id}/unselect', 'JawabanController@unselected');
-    Route::post('/jawaban/{pertanyaan_id}/komentar', 'JawabanController@komentar');
+    Route::post('/komentar-jawaban/{pertanyaan_id}/{qa_id}/', 'KomentarJawabanController@store');
 
-    Route::post('/komentar-pertanyaan/{pertanyaan_id}', 'KomentarPertanyaanController@store');
-    Route::delete('/komentar-pertanyaan/{pertanyaan_id}/{qc_id}', 'KomentarPertanyaanController@delete');
-
-    Route::post('/vote', 'PertanyaanController@vote')->name('vote');
-    Route::post('/vote-jawaban', 'PertanyaanController@vote_jawaban')->name('vote-jawaban');
+    Route::post('/vote-jawaban', 'JawabanController@vote_jawaban')->name('vote-jawaban');
 });

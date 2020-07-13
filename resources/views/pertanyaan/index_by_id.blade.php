@@ -38,6 +38,7 @@
                         <div class="card-header">
                             <h3 class="card-title"> Pertanyaan : </h3><br>
                             <?php echo $pertanyaan->isi ; ?>
+
                             <!-- Upvote pertanyaan -->
                             @foreach($pertanyaan->tags as $tag)
                             <button class="btn btn-info btn-sm"> {{$tag->nama}} </button>
@@ -54,6 +55,7 @@
                                 <p id="sum_upvote"> Vote : {{ $vote->where('pertanyaan_id', $pertanyaan->id)->get()->sum('value') }} </p>
                             </article>
                             <!-- End upvote pertanyaan -->
+
                             <ul class="pagination pagination-sm m-0 float-right">
                                 @if (Auth::check())
                                 @if (Auth::user()->id != $pertanyaan->user_id)
@@ -82,26 +84,27 @@
                                 @endif
                                 @endif
                             </ul>
+
                             <!-- {{-- TABLE KOMENTAR PERTANYAAN --}} -->
                             <p><br><br></p>
                             @auth
                             <form role="form" action="/komentar-pertanyaan/{{$pertanyaan->id}}" method="post">
                                 @csrf
                                 <div class="form-group">
-                                    <label for="komentar" class="col-form-label"></label>
-                                    <input name="komentar" class="form-control" id="komentar">
+                                    <label for="komentar_pertanyaan" class="col-form-label"></label>
+                                    <input name="komentar_pertanyaan" class="form-control" id="komentar_pertanyaan">
                                 </div>
                                 <button type="submit" class="btn btn-success btn-sm" style="float:right">Komentar</button>
                             </form>
                             @endauth
-                            <p><br><br><br></p>
+                            <p><br><br></p>
+                            <hr>
                             @foreach ($komentar_pertanyaan as $item=>$p_komentar)
-                            <div class="row" style="border-top: 1px solid black" id="comment">
+                            <div class="row" id="comment">
                                 <div class="col-md-2">
                                     <p><br></p>
-                                    <p>{{ $p_komentar->user->name }} : </p>
+                                    <button class="btn btn-success btn-sm"> {{ $p_komentar->user->name }} &nbsp;: </button><p>
                                     <p><br></p>
-
                                 </div>
                                 <div class="col-md-9">
                                     <p><br></p>
@@ -111,19 +114,20 @@
                                 <div class="col-md-1">
                                     <p><br></p>
                                     @auth
-                                    @if (Auth::user()->id == $p_komentar->user->id)
-                                    <form action="/komentar-pertanyaan/{{ $p_komentar['pertanyaan_id'] }}/{{ $p_komentar['id'] }}" method="post">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                            <i class="fas fa-minus-square"> Hapus </i>
-                                        </button>
-                                    </form>
-                                    @endif
+                                        @if (Auth::user()->id == $p_komentar->user->id)
+                                        <form action="/komentar-pertanyaan/{{ $p_komentar['pertanyaan_id'] }}/{{ $p_komentar['id'] }}" method="post">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                <i class="fas fa-minus-square"> Hapus </i>
+                                            </button>
+                                        </form>
+                                        @endif
                                     @endauth
                                     <p><br></p>
                                 </div>
                             </div>
+                            <hr>
                             @endforeach
                         </div>
 
@@ -169,88 +173,84 @@
                                 <tbody>
                                     <?php $i = 1 ?>
                                     @foreach ($daftar_jawaban as $item => $jawaban)
-                                    <tr>
-                                        <td> {{ $i++ }} </td>
-                                        <td>
-                                            <?php  print_r($jawaban['isi']); ?>
-                                            <p>Dijawab oleh : {{ $jawaban->user->name }} </p>
-                                            <article class="post" data-jawaban_id="{{ $jawaban->id }}">
-                                                @if (Auth::check())
-                                                @if (Auth::user()->id != $jawaban->user->id)
-                                                <div class="interaction">
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
-                                                    <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
-                                                </div>
-                                                @endif
-                                                @endif
-                                                <p id="sum_upvote"> Vote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
-                                                @if($jawaban->is_selected == 1)
-                                                <strong>This is Best Answer</strong>
-                                                @endif
-                                            </article>
-                                            @auth
-                                            @if (Auth::user()->id == $jawaban->user->id)
-                                            <div class="float-right mb-2">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}" method="post">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Hapus Jawaban </i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @endif
-                                            @if (Auth::user()->id == $pertanyaan->user_id)
-                                            @if ($jawaban->is_selected != 1)
-                                            <div class="float-right mb-2">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/select" method="post">
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Best! </i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @else
-                                            <div class="float-right mb-2">
-                                                <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/unselect" method="post">
-                                                    @csrf
-                                                    <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Revoke Best! </i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                            @endif
-                                            @endif
-                                            @endauth
-                                            <!-- Tombol Komentar Jawaban   -->
-                                            <form action="/jawaban/{{ $pertanyaan->id }}/komentar" method="post">
-                                                @csrf
-                                                <input type="hidden" name="jawaban_id" value="{{ $jawaban['id'] }}">
-                                                <input name="komentar" class="form-control" id="komentar">
-                                                <div class="d-flex justify-content-end">
-                                                    <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
-                                                        <i class="fas fa-minus-square"> Komentar </i>
-                                                    </button>
-                                                </div>
-                                            </form>
+                                        <tr>
+                                            <td> {{ $i++ }} </td>
+                                            <td>
+                                                <?php  print_r($jawaban['isi']); ?>
+                                                <p>Dijawab oleh : {{ $jawaban->user->name }} </p>
+                                                <article class="post" data-jawaban_id="{{ $jawaban->id }}" id="#a{{ $jawaban->id }}">
+                                                    @if($jawaban->is_selected == 1)
+                                                        <button class="btn btn-info btn-sm"><strong>This is Best Answer!</strong></button>
+                                                    @endif
+                                                    @if (Auth::check())
+                                                        @if (Auth::user()->id != $jawaban->user->id)
+                                                        <div class="interaction">
+                                                            <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == 1 ? 'Kamu upvote jawaban ini' : 'Upvote' : 'Upvote'  }}</a> |
+                                                            <a href="#" class="vote-jawaban">{{ Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first() ? Auth::user()->vote_jawaban()->where('jawaban_id', $jawaban->id)->first()->value == -1 ? 'Kamu downvote jawaban ini' : 'Downvote' : 'Downvote'  }}</a>
+                                                        </div>
+                                                        @endif
+                                                    @endif
+                                                    <p id="sum_upvote"> Vote : {{ $vote_jawaban->where('jawaban_id', $jawaban->id)->get()->sum('value') }} </p>
+                                                </article>
+                                                @auth
+                                                    @if (Auth::user()->id == $jawaban->user->id)
+                                                    <div class="float-right">
+                                                        <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}" method="post">
+                                                            @method('DELETE')
+                                                            @csrf
+                                                            <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                                <i class="fas fa-minus-square"> Hapus Jawaban </i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    @endif
 
-                                            <!-- End tombol komentar jawaban -->
-
-                                            <h6>Komentar :</h6>
-                                            <hr>
-
-                                            <!-- Komentar jawaban -->
-                                            @foreach ($komentar_jawaban as $key => $value)
-                                            @if ($value->jawaban_id == $jawaban->id)
-                                            <button class="btn btn-success btn-sm"> {{ $value->user->name }} : </button>
-                                            {{$value->isi}} <br>
-                                            @endif
-                                            @endforeach
-                                            <!-- End komentar jawaban -->
-                                        </td>
-                                    </tr>
-
-
+                                                    @if (Auth::user()->id == $pertanyaan->user_id)
+                                                        @if ($jawaban->is_selected != 1)
+                                                        <div style="float:right">
+                                                            <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/select" method="post">
+                                                                @csrf
+                                                                <button title="Hapus" type="submit" class="btn btn-success btn-sm ml-2">
+                                                                    <i class="fas fa-minus-square"> Best! </i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                        @else
+                                                        <div style="float:right">
+                                                            <form action="/jawaban/{{ $jawaban['pertanyaan_id'] }}/{{ $jawaban['id'] }}/unselect" method="post">
+                                                                @csrf
+                                                                <button title="Hapus" type="submit" class="btn btn-danger btn-sm ml-2">
+                                                                    <i class="fas fa-minus-square"> Revoke Best! </i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                        @endif
+                                                    @endif
+                                                    <p><br></p>
+                                                    @auth
+                                                        <form role="form" action="/komentar-jawaban/{{$jawaban['pertanyaan_id']}}/{{ $jawaban['id'] }}" method="post">
+                                                            @csrf
+                                                            <div class="form-group">
+                                                                <label for="komentar_jawaban" class="col-form-label"></label>
+                                                                <input name="komentar_jawaban" class="form-control" id="komentar_jawaban">
+                                                            </div>
+                                                            <button type="submit" class="btn btn-success btn-sm" style="float:right">Komentar</button>
+                                                        </form>
+                                                    @endauth
+                                                @endauth
+                                                <h6>Komentar Jawaban {{ $jawaban->user->name }} :</h6>
+                                                <hr>
+                                                <!-- Komentar jawaban -->
+                                                @foreach ($komentar_jawaban as $key => $value)
+                                                    @if ($value->jawaban_id == $jawaban->id)
+                                                        <button class="btn btn-success btn-sm"> {{ $value->user->name }} &nbsp;: </button>
+                                                        &nbsp;{{$value->isi}} <br>
+                                                        <hr>
+                                                    @endif
+                                                @endforeach
+                                                <!-- End komentar jawaban -->
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -359,6 +359,17 @@
 
         modal.find('.modal-body form').attr("action", path)
         modal.find('.modal-body h3').html(pertanyaan)
+    });
+
+    $('#komentar').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget)
+        var path = button.data('pathkomentar')
+        var komentarjawaban = button.data('komentarjawaban')
+        console.log("komentarjawaban");
+        var modal = $(this)
+
+        modal.find('.modal-body form').attr("action", path)
+        modal.find('.modal-body h3').html(komentarjawaban)
     });
 
     // script khusus summernote 

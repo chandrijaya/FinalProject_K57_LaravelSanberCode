@@ -20,9 +20,9 @@ class CreateVoteJawabanTable extends Migration
             $table->unsignedBigInteger('penjawab_id');
             $table->integer('value');
             $table->integer('reputasi')->default(0);
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('jawaban_id')->references('id')->on('jawaban');
-            $table->foreign('penjawab_id')->references('user_id')->on('jawaban');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete("cascade");
+            $table->foreign('jawaban_id')->references('id')->on('jawaban')->onDelete("cascade");
+            $table->foreign('penjawab_id')->references('user_id')->on('jawaban')->onDelete("cascade");
             $table->timestamps();
         });
     }

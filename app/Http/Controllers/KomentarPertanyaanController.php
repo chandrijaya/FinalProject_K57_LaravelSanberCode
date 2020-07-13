@@ -20,7 +20,7 @@ class KomentarPertanyaanController extends Controller
         unset($data['_token']);
         $Komentar_pertanyaan = KomentarPertanyaan::create([
             'pertanyaan_id' => $id,
-            'isi' => $data['komentar'],
+            'isi' => $data['komentar_pertanyaan'],
             'user_id' => Auth::id(),
         ]);
         return redirect('/pertanyaan/'.$id.'#comment');
