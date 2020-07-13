@@ -65,7 +65,7 @@ class JawabanController extends Controller
         unset($data['_token']);
         $jawaban = KomentarJawaban::create([
             'jawaban_id' => $data['jawaban_id'],
-            'isi' => $data['isi'],
+            'isi' => $data['komentar'],
             'user_id' => Auth::id(),
         ]);
         return redirect('/pertanyaan/'.$id);
