@@ -7,6 +7,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     protected $guarded = [];
+    
+    public function profile() {
+        return $this->belongsTo('App\Profile');
+    }
+
     public function pertanyaan() {
         return $this->hasMany('App\Pertanyaan');
     }

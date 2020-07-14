@@ -6,6 +6,8 @@ use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Controllers\JawabanController;
+use App\Profile;
 use App\User;
 use App\Tag;
 use App\Pertanyaan;
@@ -42,37 +44,19 @@ class PertanyaanController extends Controller {
         
         $jawaban = Jawaban::get();
         $vote_pertanyaan = Pertanyaan::get();
-        if ($jawaban->first() == null) {
-            $reputasi_jawaban = 0;
-        
-        } else {
-            foreach ($jawaban as $key => $value) {
-                $nama = User::where('id', $value->user_id)->value('name');
-                $reputasi_jawaban[$nama] = $vote_jawaban->where('penjawab_id', $value->user_id)->get()->sum('reputasi');
-                $best_jawaban = Jawaban::where([
-                    ['user_id', $value->user_id],
-                    ['is_selected', 1]])->first();
-                if ($best_jawaban != null) {
-                    $reputasi_jawaban[$nama] += 15;
-                }
-            }
-        }
-
-        if ($vote_pertanyaan->first() == null) {
-            $reputasi_pertanyaan = null;
-        } else {
-            foreach ($vote_pertanyaan as $key => $value) {
-                $nama = User::where('id', $value->user_id)->value('name');
-                $reputasi_pertanyaan[$nama] =  $vote->where('penanya_id', $value->user_id)->sum('reputasi');
-            } 
-        }
+        $p_id = Pertanyaan::where('id', $id)->value('user_id');
+        $reputasi = Profile::where('id', $p_id)->value('reputasi');
+        // $cek1 = Jawaban::where('pertanyaan_id', $id)->pluck('isi');
+        // $cek2 = Jawaban::where('pertanyaan_id', $id)->pluck('id');
+        // dd(count($cek2));
+        // $cek = array_combine($cek1, $cek2);
+        // dd($cek);
         return view('pertanyaan.index_by_id', ['daftar_jawaban' => $daftar_jawaban, 
                                 'pertanyaan' => $pertanyaan,
                                 'komentar_pertanyaan' => $komentar_pertanyaan, 
                                 'vote' => $vote, 
-                                'vote_jawaban' => $vote_jawaban, 
-                                'reputasi_jawaban' => $reputasi_jawaban, 
-                                'reputasi_pertanyaan' => $reputasi_pertanyaan,
+                                'vote_jawaban' => $vote_jawaban,
+                                'reputasi' => $reputasi, 
                                 'komentar_jawaban' => $komentar_jawaban]);
     }
 
@@ -125,7 +109,13 @@ class PertanyaanController extends Controller {
     // Hapus pertanyaan
     public function delete($id) {
         Alert::warning('Hapus Pertanyaan', 'Apakah anda yakin ingin menghapus pertanyaan?');
-        $vote_pertanyaan_removed = VotePertanyaan::where('pertanyaan_id', $id)->forceDelete();
+        $cek_vote = VotePertanyaan::where('pertanyaan_id', $id)->first();
+        if ($cek_vote != null) {
+            $min_reputasi = VotePertanyaan::where('pertanyaan_id', $id)->value('reputasi');
+            $p_id = VotePertanyaan::where('pertanyaan_id', $id)->value('user_id');
+            $update_reputasi = Profile::where('id', $p_id)->decrement('reputasi', $min_reputasi);
+            $vote_pertanyaan_removed = VotePertanyaan::where('pertanyaan_id', $id)->forceDelete();
+        }
         $jawaban_removed = Jawaban::where('pertanyaan_id', $id)->forceDelete();
         $komentar_pertanyaan = KomentarPertanyaan::where('pertanyaan_id', $id)->forceDelete();
         $cek = Pertanyaan::find($id)->forceDelete();
@@ -135,15 +125,22 @@ class PertanyaanController extends Controller {
 
     // Upvote pertanyaan dan reputasi
     public function vote(Request $request) {
+        $voter_rep = Profile::where('id', Auth::id())->value('reputasi');
         $pertanyaan_id = $request['pertanyaan_id'];
         $is_vote = $request['isVote'] === 'true';
         if ($is_vote == 1) {
             $is_vote = 1;
             $reputasi = 10;
         } else {
+            if ($voter_rep < 15){
+                return $cek['error'];
+            }
+            else {
             $is_vote = -1;
             $reputasi = -1;
         }
+            }
+            
         echo $is_vote;
         $update = false;
         $pertanyaan = Pertanyaan::find($pertanyaan_id);
@@ -160,6 +157,12 @@ class PertanyaanController extends Controller {
             $update = true;
             if ($already_vote == $is_vote && $user_id_pertanyaan != $user_id_online) {
                 $vote->delete();
+                if ($is_vote == -1) {
+                    $update_reputasi = Profile::where('id', $user_id_pertanyaan)->increment('reputasi', 1);
+                }
+                else {
+                    $update_reputasi = Profile::where('id', $user_id_pertanyaan)->decrement('reputasi', 10);
+                }
                 return null;
             }
         } else {
@@ -170,10 +173,22 @@ class PertanyaanController extends Controller {
         $vote->penanya_id = $user_id_pertanyaan;
         if ($update && $user_id_pertanyaan != $user_id_online) {
             $vote->update();
+            if ($is_vote != -1) {
+                $update_reputasi = Profile::where('id', $user_id_pertanyaan)->increment('reputasi', 11);
+            }
+            else {
+                $update_reputasi = Profile::where('id', $user_id_pertanyaan)->decrement('reputasi', 11);
+            }
         } elseif ($user_id_pertanyaan != $user_id_online) {
             $vote->user_id = $user->id;
             $vote->pertanyaan_id = $pertanyaan->id;
             $vote->save();
+            if ($is_vote != -1) {
+                $update_reputasi = Profile::where('id', $user_id_pertanyaan)->increment('reputasi', 10);
+            }
+            else {
+                $update_reputasi = Profile::where('id', $user_id_pertanyaan)->decrement('reputasi', 1);
+            }
         }
         return null;
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use App\User;
+use App\Profile;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -66,10 +67,17 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         Alert::success('Berhasil Register', 'Anda berhasil melakukan proses register');
-        return User::create([
+        $init_profile =  Profile::create([
             'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
         ]);
+
+        $p_id = Profile::where('name', $data['name'])->value('id');
+        
+        return User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'profile_id' => $p_id
+                ]);
     }
 }

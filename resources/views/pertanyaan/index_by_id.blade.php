@@ -11,12 +11,8 @@
                     <h6 style="color: grey; line-height: 0;">Pertanyaan diperbaharui : {{ $pertanyaan->updated_at }}</h6>
                     <h6>Ditanya oleh {{ $pertanyaan->user->name }} </h6>
 
-                    <h6 style="line-height: 0;">Reputasi penanya :
-                        @if (isset($reputasi_jawaban[$pertanyaan->user->name]))
-                        {{ $reputasi_pertanyaan[$pertanyaan->user->name] + $reputasi_jawaban[$pertanyaan->user->name] }}
-                        @else
-                        {{$reputasi_pertanyaan[$pertanyaan->user->name]}}
-                        @endif
+                    <h6 style="line-height: 0;">
+                        Reputasi penanya : {{$reputasi}} 
                     </h6>
                 </div>
                 <div class="col-sm-6">
@@ -97,19 +93,17 @@
                                 <button type="submit" class="btn btn-success btn-sm" style="float:right">Komentar</button>
                             </form>
                             @endauth
-                            <p><br><br></p>
+                            <h6>Komentar Pertanyaan {{ $pertanyaan->user->name }} :</h6>
                             <hr>
                             @foreach ($komentar_pertanyaan as $item=>$p_komentar)
                             <div class="row" id="comment">
                                 <div class="col-md-2">
                                     <p><br></p>
                                     <button class="btn btn-success btn-sm"> {{ $p_komentar->user->name }} &nbsp;: </button><p>
-                                    <p><br></p>
                                 </div>
                                 <div class="col-md-9">
                                     <p><br></p>
                                     {{$p_komentar['isi']}}
-                                    <p><br></p>
                                 </div>
                                 <div class="col-md-1">
                                     <p><br></p>
@@ -124,7 +118,6 @@
                                         </form>
                                         @endif
                                     @endauth
-                                    <p><br></p>
                                 </div>
                             </div>
                             <hr>
